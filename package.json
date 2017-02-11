@@ -14,6 +14,7 @@
   "author": "Trent Willis <trentmwillis@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "d3": "^4.5.0",
     "find-up": "^2.1.0",
     "fs-extra": "^2.0.0"
   },
