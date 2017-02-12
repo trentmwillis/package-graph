@@ -12,12 +12,16 @@
       .node {
         pointer-events: all;
       }
+
+      text {
+        position: relative;
+        pointer-events: none;
+        z-index: 100;
+      }
     </style>
   </head>
   <body>
-    <div class="svg-container">
-      <svg id="graph"></svg>
-    </div>
+    <svg id="graph"></svg>
 
     <script src="../dist/package.graph.js"></script>
     <script src="../dist/d3.min.js"></script>
@@ -69,7 +73,9 @@
 
       link = link.enter()
         .append("line")
-        .attr("class", "link");
+        .attr("class", "link")
+        .attr('data-to', function(d) { return d.target.id; })
+        .attr('data-from', function(d) { return d.source.id; });
 
       link.exit().remove();
 
@@ -79,17 +85,28 @@
 
       node = node.enter()
         .append("g")
+        .attr('id', function(d) { return d.id; })
         .attr("class", "node")
         .on('mouseenter', function(d) {
-          d3.select(d3.event.target).append('text').attr("dx", 5).text(function(d) { return d.id; });
+          let id = d.id;
+          d3.select(d3.event.target).style('fill', 'red').append('text').attr("dx", 5).text(function(d) { return d.id; });
+          d3.selectAll('[data-from="' + id + '"]').style('stroke', 'red');
+          d.dependencies.forEach((dep) => {
+            d3.select('[id="' + dep + '"]').style('fill', 'red').append('text').attr("dx", 5).text(function(d) { return d.id; });
+          });
         })
         .on('mouseleave', function(d) {
-          d3.select(d3.event.target).select('text').remove();
+          let id = d.id;
+          d3.select(d3.event.target).style('fill', null).select('text').remove();
+          d3.selectAll('[data-from="' + id + '"]').style('stroke', null);
+          d.dependencies.forEach((dep) => {
+            d3.select('[id="' + dep + '"]').style('fill', null).select('text').remove();
+          });
         });
 
       node.append("circle")
         .attr("r", function(d) {
-          if (d.id === "package-graph@1.0.0") {
+          if (d.isRoot) {
             return 10;
           }
 
@@ -97,10 +114,6 @@
         });
 
       node.exit().remove();
-
-      // node.append("text")
-      //     .attr("dy", 3)
-      //     .text(function(d) { return d.id; });
 
       function onTick() {
         link

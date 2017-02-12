@@ -14,11 +14,15 @@
   "author": "Trent Willis <trentmwillis@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "commander": "^2.9.0",
     "d3": "^4.5.0",
     "find-up": "^2.1.0",
     "fs-extra": "^2.0.0"
   },
   "devDependencies": {
     "mocha": "^3.2.0"
+  },
+  "bin": {
+    "package-graph": "bin/package-graph"
   }
 }
